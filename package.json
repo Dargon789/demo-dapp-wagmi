@@ -20,7 +20,7 @@
     "@0xsequence/utils": "^2.0.1",
     "@0xsequence/wagmi-connector": "^4.0.1",
     "@tanstack/react-query": "^5.29.2",
-    "@types/node": "^20.12.7",
+    "@types/node": "^22.12.0",
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
     "@vanilla-extract/css": "^1.14.2",
