@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "0xsequence": "^2.0.1",
-    "@0xsequence/design-system": "^1.7.6",
+    "@0xsequence/design-system": "^2.0.1",
     "@0xsequence/ethauth": "1.0.0",
     "@0xsequence/utils": "^2.0.1",
     "@0xsequence/wagmi-connector": "^4.0.1",
