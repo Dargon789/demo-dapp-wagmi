@@ -30,7 +30,7 @@
     "react-dom": "^19.0.0",
     "typescript": "^5.4.5",
     "viem": "^2.37.6",
-    "wagmi": "^2.5.20"
+    "wagmi": "^3.0.0"
   },
   "devDependencies": {
     "@vanilla-extract/vite-plugin": "^4.0.7",
