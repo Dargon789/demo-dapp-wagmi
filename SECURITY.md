@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
+Use this section to tell people which versions of your project are
 currently being supported with security updates.
 
 | Version | Supported          |
@@ -14,6 +14,8 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-To report a security vulnerability, please use the [private vulnerability reporting feature on GitHub](https://github.com/0xsequence/demo-dapp-wagmi/security/advisories/new).
+Use this section to tell people how to report a vulnerability.
 
-You can expect an acknowledgement of your report within 48 hours. We appreciate your efforts to responsibly disclose your findings and will make every effort to address all security issues in a timely manner.
+Tell them where to go, how often they can expect to get an update on a
+reported vulnerability, what to expect if the vulnerability is accepted or
+declined, etc.
