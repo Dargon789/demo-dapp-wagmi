@@ -7,8 +7,6 @@ on:
 
 jobs:
   build:
-    permissions:
-      contents: write
     runs-on: ubuntu-latest
     name: Build and Push
     steps:
@@ -17,8 +15,7 @@ jobs:
 
       - name: Install dependencies
         uses: ./.github/actions/install-dependencies
-        continue-on-error: false
-        
+
       - name: Build
         run: pnpm build
 
