@@ -4,11 +4,9 @@ import React, { useState, useEffect } from 'react'
 import logoUrl from './images/logo.svg'
 
 import { ethers } from 'ethers'
-import { sequence } from '0xsequence'
-import { useWalletClient, usePublicClient, useAccount, useConnect, useDisconnect } from 'wagmi'
+import { useWalletClient, usePublicClient, useAccount, useConnect, useDisconnect, useSwitchChain } from 'wagmi'
 
 import { Address, formatEther, parseEther } from 'viem'
-import { polygon } from 'viem/chains' 
 
 import { ERC_20_ABI } from './constants/abi'
 
@@ -20,30 +18,31 @@ import { Console } from './components/Console'
 configureLogger({ logLevel: 'DEBUG' })
 
 const App = () => {
-  const { isConnected } = useAccount()
+  const { chains, switchChain } = useSwitchChain()
+  const { isConnected, chainId } = useAccount()
   const publicClient = usePublicClient()
   const { data: walletClient } = useWalletClient()
-  const { connect, connectors, isLoading, pendingConnector } = useConnect()
-  const { disconnect } =  useDisconnect()
+  const { connect, connectors, isPending } = useConnect()
+  const { disconnect } = useDisconnect()
 
-  const [consoleMsg, setConsoleMsg] = useState<null|string>(null)
+  const [consoleMsg, setConsoleMsg] = useState<null | string>(null)
   const [consoleLoading, setConsoleLoading] = useState<boolean>(false)
 
   const appendConsoleLine = (message: string) => {
-    return (setConsoleMsg((prevState => {
+    return setConsoleMsg(prevState => {
       return `${prevState}\n\n${message}`
-    })))
+    })
   }
-  
+
   const resetConsole = () => {
     setConsoleMsg(null)
     setConsoleLoading(true)
   }
 
   const addNewConsoleLine = (message: string) => {
-    setConsoleMsg((() => {
-      return (message)
-    }))
+    setConsoleMsg(() => {
+      return message
+    })
   }
 
   const consoleWelcomeMessage = () => {
@@ -64,14 +63,26 @@ const App = () => {
     }
   }, [isConnected])
 
+  const getAddress = async () => {
+    try {
+      resetConsole()
+      const [account] = await walletClient.getAddresses()
+      console.log('walletClient.getAddresses()', account)
+      addNewConsoleLine(`walletClient.getAddresses(): ${account}`)
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMesssage()
+    }
+  }
+
   const getChainID = async () => {
     try {
       resetConsole()
-      const chainId = await walletClient.getChainId()
       console.log('walletClient.getChainId()', chainId)
       addNewConsoleLine(`walletClient.getChainId(): ${chainId}`)
       setConsoleLoading(false)
-    } catch(e) {
+    } catch (e) {
       console.error(e)
       consoleErrorMesssage()
     }
@@ -82,29 +93,28 @@ const App = () => {
       resetConsole()
       const [account] = await walletClient.getAddresses()
       const balance = await publicClient.getBalance({
-        address: account,
+        address: account
       })
       const formattedBalance = formatEther(balance)
       console.log('balance', formattedBalance)
       addNewConsoleLine(`balance: ${formattedBalance}`)
-  
-      setConsoleLoading(false) 
-    } catch(e) {
+
+      setConsoleLoading(false)
+    } catch (e) {
       console.error(e)
       consoleErrorMesssage()
     }
   }
-
 
   const getNetwork = async () => {
     try {
       resetConsole()
       const network = publicClient.chain
       console.log('network:', network)
-  
+
       addNewConsoleLine(`network: ${JSON.stringify(network)}`)
-      setConsoleLoading(false) 
-    } catch(e) {
+      setConsoleLoading(false)
+    } catch (e) {
       console.error(e)
       consoleErrorMesssage()
     }
@@ -112,7 +122,7 @@ const App = () => {
 
   const signMessage = async () => {
     try {
-      resetConsole()  
+      resetConsole()
       const message = `Two roads diverged in a yellow wood,
   Robert Frost poet
   
@@ -138,17 +148,16 @@ const App = () => {
   Two roads diverged in a wood, and I—
   I took the one less traveled by,
   And that has made all the difference.`
-      
-  
+
       const [account] = await walletClient.getAddresses()
-  
+
       // sign
       const sig = await walletClient.signMessage({
         message,
         account
       })
       console.log('signature:', sig)
-  
+
       addNewConsoleLine(`signature: ${sig}`)
 
       const isValid = await publicClient.verifyMessage({
@@ -158,10 +167,10 @@ const App = () => {
       })
 
       console.log('isValid?', isValid)
-  
+
       appendConsoleLine(`isValid? ${isValid}`)
-      setConsoleLoading(false) 
-    } catch(e) {
+      setConsoleLoading(false)
+    } catch (e) {
       console.error(e)
       consoleErrorMesssage()
     }
@@ -170,25 +179,25 @@ const App = () => {
   const sendETH = async () => {
     try {
       resetConsole()
-  
+
       console.log(`Transfer txn on ${walletClient.getChainId()}`)
       addNewConsoleLine(`Transfer txn on ${walletClient.getChainId()}`)
-  
+
       const toAddress = ethers.Wallet.createRandom().address
-  
+
       const balance1 = await publicClient.getBalance({
         address: toAddress as Address
       })
       console.log(`balance of ${toAddress}, before:`, balance1)
       appendConsoleLine(`balance of ${toAddress}, before: ${balance1}`)
-      
+
       const [account] = await walletClient.getAddresses()
 
       /* @ts-ignore-next-line */
       await walletClient.sendTransaction({
         to: toAddress as Address,
         value: parseEther('1.00'),
-        account,
+        account
       })
 
       const balance2 = await publicClient.getBalance({
@@ -196,8 +205,8 @@ const App = () => {
       })
       console.log(`balance of ${toAddress}, after:`, balance2)
       appendConsoleLine(`balance of ${toAddress}, after: ${balance2}`)
-      setConsoleLoading(false) 
-    } catch(e) {
+      setConsoleLoading(false)
+    } catch (e) {
       console.error(e)
       consoleErrorMesssage()
     }
@@ -207,9 +216,9 @@ const App = () => {
     try {
       resetConsole()
       const toAddress = ethers.Wallet.createRandom().address
-  
-      const amount = ethers.utils.parseUnits('5', 18)
-  
+
+      const amount = ethers.parseUnits('5', 18)
+
       const daiContractAddress = '0x8f3Cf7ad23Cd3CaDbD9735AFf958023239c6A063' // (DAI address on Polygon)
 
       const [account] = await walletClient.getAddresses()
@@ -219,13 +228,54 @@ const App = () => {
         account,
         to: daiContractAddress,
         value: 0n,
-        data: new ethers.utils.Interface(ERC_20_ABI).encodeFunctionData('transfer', [toAddress, amount.toHexString()]) as `0x${string}`
+        data: new ethers.Interface(ERC_20_ABI).encodeFunctionData('transfer', [
+          toAddress,
+          ethers.toQuantity(amount)
+        ]) as `0x${string}`
       })
-  
+
       console.log('transaction response', hash)
       addNewConsoleLine(`TX response ${hash}`)
-      setConsoleLoading(false) 
-    } catch(e) {
+      setConsoleLoading(false)
+    } catch (e) {
+      console.error(e)
+      consoleErrorMesssage()
+    }
+  }
+
+  const switchTo = async (chainId: number, mode: 'wallet-client' | 'switch-network') => {
+    try {
+      resetConsole()
+      console.log(`Switching to ${chainId}`, mode)
+      addNewConsoleLine(`Switching to ${chainId}`)
+
+      if (mode === 'wallet-client') {
+        await walletClient.switchChain({ id: chainId })
+      } else {
+        switchChain({ chainId })
+      }
+
+      setConsoleLoading(false)
+    } catch (e) {
+      console
+    }
+  }
+
+  const estimateGas = async () => {
+    try {
+      resetConsole()
+
+      // This is a contract that is only deployed on Sepolia
+      // and is not deployed on any other network, when called it spends
+      // 300k gas, so estimating the gas (on Sepolia) should return 300k
+      const estimated = await publicClient.estimateGas({
+        account: '0x7A3979A8B114DB14618417Cc9f7893929aD29F2d',
+        to: '0x7A3979A8B114DB14618417Cc9f7893929aD29F2d'
+      } as any)
+
+      console.log('estimated gas:', estimated)
+      addNewConsoleLine(`estimated gas: ${estimated}`)
+    } catch (e) {
       console.error(e)
       consoleErrorMesssage()
     }
@@ -243,6 +293,9 @@ const App = () => {
           <Text>Please open your browser dev inspector to view output of functions below</Text>
         </Box>
         <Group label="State">
+          <Button disabled={disableActions} onClick={() => getAddress()}>
+            Address
+          </Button>
           <Button disabled={disableActions} onClick={() => getChainID()}>
             ChainID
           </Button>
@@ -252,6 +305,21 @@ const App = () => {
           <Button disabled={disableActions} onClick={() => getBalance()}>
             Get Balance
           </Button>
+        </Group>
+
+        <Group label="Network switching">
+          {chains.map(chain => {
+            return (
+              <Button
+                key={chain.id}
+                style={{ height: 66 }}
+                disabled={disableActions}
+                onClick={() => switchTo(chain.id, 'switch-network')}
+              >
+                Switch to {chain.name} (walletClient.switchChain)
+              </Button>
+            )
+          })}
         </Group>
 
         <Group label="Signing">
@@ -268,7 +336,13 @@ const App = () => {
             Send DAI Tokens
           </Button>
         </Group>
-        </>
+
+        <Group label="Misc">
+          <Button disabled={disableActions} onClick={() => estimateGas()}>
+            Estimate gas
+          </Button>
+        </Group>
+      </>
     )
   }
 
@@ -276,17 +350,19 @@ const App = () => {
     if (!isConnected) {
       return (
         <Box gap="4" flexDirection="column" marginY="4">
-          {connectors.map((connector) => (
+          {connectors.map(connector => (
             <Button
-              disabled={!connector.ready}
+              disabled={isPending}
               key={connector.id}
-              onClick={() => connect({ connector })}
+              onClick={() => {
+                try {
+                  connect({ connector })
+                } catch (e) {
+                  console.error('error connecting', e)
+                }
+              }}
             >
               {connector.name}
-              {!connector.ready && ' (unsupported)'}
-              {isLoading &&
-                connector.id === pendingConnector?.id &&
-                ' (connecting)'}
             </Button>
           ))}
         </Box>
@@ -295,9 +371,7 @@ const App = () => {
 
     return (
       <Group>
-        <Button onClick={() => disconnect()}>
-          Disconnect Wallet
-        </Button>
+        <Button onClick={() => disconnect()}>Disconnect Wallet</Button>
       </Group>
     )
   }
@@ -308,7 +382,9 @@ const App = () => {
         <Image height="10" alt="logo" src={logoUrl} />
       </Box>
       <Box>
-        <Text color="text100" variant="large">Demo Dapp + Wagmi</Text>
+        <Text color="text100" variant="large">
+          Demo Dapp + Wagmi
+        </Text>
       </Box>
       {getConnectionButtons()}
       {getWalletActions()}
@@ -317,5 +393,4 @@ const App = () => {
   )
 }
 
-export default React.memo(App)
-
+export default App

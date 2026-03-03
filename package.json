@@ -7,41 +7,37 @@
   "scripts": {
     "dev": "BROWSER=none pnpm start",
     "start": "vite",
-    "build": "BUILD_PATH='./dist' tsc && vite build",
+    "build": "tsc && vite build",
     "serve": "vite preview",
-    "dist": "yarn build",
-    "link-sequence": "yarn link 0xsequence @0xsequence/abi @0xsequence/api @0xsequence/auth @0xsequence/config @0xsequence/guard @0xsequence/multicall @0xsequence/network @0xsequence/provider @0xsequence/relayer @0xsequence/transactions @0xsequence/utils @0xsequence/wallet",
-    "unlink-sequence": "yarn unlink 0xsequence @0xsequence/abi @0xsequence/api @0xsequence/auth @0xsequence/config @0xsequence/guard @0xsequence/multicall @0xsequence/network @0xsequence/provider @0xsequence/relayer @0xsequence/transactions @0xsequence/utils @0xsequence/wallet"
+    "typecheck": "tsc --noEmit",
+    "link-sequence": "../sequence.js/scripts/pnpm-link.sh link",
+    "unlink-sequence": "../sequence.js/scripts/pnpm-link.sh unlink"
   },
   "dependencies": {
-    "0xsequence": "^0.43.26",
-    "@0xsequence/design-system": "^0.1.107",
-    "@0xsequence/ethauth": "0.7.0",
-    "@0xsequence/wagmi-connector": "^1.1.5",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/react": "^12.1.2",
-    "@testing-library/user-event": "^13.5.0",
-    "@types/jest": "^27.4.0",
-    "@types/node": "^16.11.22",
-    "@types/react": "^18.0.0",
-    "@types/react-dom": "^18.0.0",
-    "@vanilla-extract/css": "^1.9.3",
-    "@wagmi/chains": "^0.1.14",
-    "ethers": "^5.7.2",
+    "0xsequence": "^2.0.1",
+    "@0xsequence/design-system": "^1.7.6",
+    "@0xsequence/ethauth": "1.0.0",
+    "@0xsequence/utils": "^2.0.1",
+    "@0xsequence/wagmi-connector": "^4.0.1",
+    "@tanstack/react-query": "^5.29.2",
+    "@types/node": "^20.12.7",
+    "@types/react": "^18.2.79",
+    "@types/react-dom": "^18.2.25",
+    "@vanilla-extract/css": "^1.14.2",
+    "ethers": "^6.13.0",
     "framer-motion": "^9.0.1",
-    "react": "^18.0.0",
-    "react-app-rewired": "^2.1.11",
-    "react-dom": "^18.0.0",
-    "typescript": "^4.5.5",
-    "viem": "^0.3.28",
-    "wagmi": "^1.0.5",
-    "web-vitals": "^2.1.4"
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "typescript": "^5.4.5",
+    "viem": "^2.9.20",
+    "wagmi": "^2.5.20"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "devDependencies": {
+    "@vanilla-extract/vite-plugin": "^4.0.7",
+    "@vitejs/plugin-react": "^4.2.1",
+    "vite": "^5.2.9",
+    "vite-plugin-svgr": "^4.2.0",
+    "vite-tsconfig-paths": "^4.3.2"
   },
   "browserslist": {
     "production": [
@@ -54,12 +50,5 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "@vanilla-extract/vite-plugin": "^3.7.1",
-    "@vitejs/plugin-react": "^3.1.0",
-    "vite": "^4.1.1",
-    "vite-plugin-svgr": "^2.4.0",
-    "vite-tsconfig-paths": "^4.0.5"
   }
 }
